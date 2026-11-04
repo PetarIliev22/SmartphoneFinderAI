@@ -5,7 +5,7 @@ def show_header():
     st.html("""
         <div class="app-header">
             <h1 class="app-title">
-                Намери подходящия смартфон
+                Намери подходящия
                 <span class="app-title-second">смартфон за теб.</span>
             </h1>
 
