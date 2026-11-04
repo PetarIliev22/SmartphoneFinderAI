@@ -1,3 +1,4 @@
+
 rules = {
     "work": {
         True: ("purpose", "contains", "work")
@@ -13,7 +14,7 @@ rules = {
     },
 
     "many_apps": {
-        True: ("ram", ">=", 8)
+        True: ("ram", ">=", 12)
     },
 
     "heavy_games": {
@@ -29,27 +30,27 @@ rules = {
     },
 
     "large_screen": {
-        True: ("screen", ">=", 6.6)
+        True: ("screen", ">=", 6.7)
     },
 
     "compact": {
-        True: ("screen", "<=", 6.2)
+        True: ("screen", "<=", 6.3)
     },
 
     "watch_videos": {
-        True: ("screen", ">=", 6.6)
+        True: ("screen", ">=", 6.7)
     },
 
     "outside": {
-        True: ("battery", ">=", 4500)
+        True: ("battery", ">=", 5000)
     },
 
     "battery": {
-        True: ("battery", ">=", 5000)
+        True: ("battery", ">=", 5500)
     },
 
     "long_gaming": {
-        True: ("battery", ">=", 5000)
+        True: ("battery", ">=", 5500)
     },
 
     "videos": {
@@ -57,6 +58,6 @@ rules = {
     },
 
     "high_resolution_camera": {
-        True: ("camera", ">=", 64)
+        True: ("camera", ">=", 100)
     }
 }

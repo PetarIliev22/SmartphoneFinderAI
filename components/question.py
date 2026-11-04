@@ -9,9 +9,9 @@ def show_question():
     question = questions[st.session_state.question_id]
     step = len(st.session_state.answers) + 1
 
-    show_steps(step)
 
     with st.container(border=True, key="question_card"):
+        show_steps(step)
         st.markdown(f"### {question['text']}")
 
         if question["type"] == "boolean":

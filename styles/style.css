@@ -1,3 +1,4 @@
+
 .block-container {
     max-width: 720px;
     padding-top: 3rem;
@@ -5,34 +6,21 @@
 }
 
 .app-header {
-    margin: 12px 0 38px;
-}
-
-.app-eyebrow {
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.55;
-    margin-bottom: 14px;
+    margin: 8px 0 28px;
 }
 
 .app-title {
-    font-size: clamp(2rem, 5vw, 2.8rem);
-    font-weight: 750;
-    line-height: 1.15;
-    letter-spacing: -1.2px;
-    margin: 0 0 18px;
-}
-
-.app-title-accent {
-    color: #ff4b4b;
+    font-size: 1.75rem;
+    font-weight: 650;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+    margin: 0 0 10px;
 }
 
 .app-description {
-    max-width: 540px;
-    font-size: 1rem;
-    line-height: 1.7;
+    max-width: 560px;
+    font-size: 0.95rem;
+    line-height: 1.6;
     opacity: 0.7;
     margin: 0;
 }
@@ -42,7 +30,7 @@
     align-items: center;
     width: 100%;
     gap: 10px;
-    margin: 20px 0 30px;
+    margin: 20px 0 0px;
 }
 
 .step {
@@ -52,13 +40,11 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-
     border: 1px solid color-mix(
         in srgb,
         currentColor 25%,
         transparent
     );
-
     border-radius: 50%;
     font-size: 14px;
     font-weight: 500;
@@ -74,7 +60,6 @@
 .step-line {
     height: 1px;
     flex: 1;
-
     background-color: color-mix(
         in srgb,
         currentColor 20%,
@@ -135,13 +120,11 @@
     min-width: 0;
     padding: 12px;
     border-radius: 12px;
-
     background-color: color-mix(
         in srgb,
         currentColor 5%,
         transparent
     );
-
     border: 1px solid color-mix(
         in srgb,
         currentColor 10%,
@@ -168,27 +151,21 @@
 }
 
 @media (max-width: 600px) {
-
     .block-container {
         padding: 1.5rem 1rem;
     }
 
     .app-header {
-        margin: 8px 0 28px;
-    }
-
-    .app-eyebrow {
-        font-size: 0.65rem;
-        margin-bottom: 12px;
+        margin: 20px 0 24px;
     }
 
     .app-title {
-        font-size: 2rem;
-        letter-spacing: -0.8px;
+        font-size: 2.3rem;
+        letter-spacing: -0.3px;
     }
 
     .app-description {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         line-height: 1.6;
     }
 

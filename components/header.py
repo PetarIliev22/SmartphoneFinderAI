@@ -1,23 +1,18 @@
 
 import streamlit as st
 
-
 def show_header():
     st.html("""
         <div class="app-header">
-            <div class="app-eyebrow">
-                SMARTPHONE FINDER
-            </div>
-
             <h1 class="app-title">
-                Открий своя
-                <span class="app-title-accent">идеален смартфон.</span>
+                Намери подходящия
+                <span class="app-title-second">смартфон за теб.</span>
             </h1>
 
             <p class="app-description">
-                Отговори на няколко кратки въпроса.
-                Ние ще подберем най-подходящия смартфон
-                според твоя бюджет и нужди.
+                Отговори на няколко въпроса и получи
+                препоръка според бюджета и начина,
+                по който използваш телефона си.
             </p>
         </div>
     """)
