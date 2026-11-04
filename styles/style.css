@@ -1,0 +1,237 @@
+.block-container {
+    max-width: 720px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+}
+
+.app-header {
+    margin: 12px 0 38px;
+}
+
+.app-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin-bottom: 14px;
+}
+
+.app-title {
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 750;
+    line-height: 1.15;
+    letter-spacing: -1.2px;
+    margin: 0 0 18px;
+}
+
+.app-title-accent {
+    color: #ff4b4b;
+}
+
+.app-description {
+    max-width: 540px;
+    font-size: 1rem;
+    line-height: 1.7;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.steps {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    margin: 20px 0 30px;
+}
+
+.step {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    border: 1px solid color-mix(
+        in srgb,
+        currentColor 25%,
+        transparent
+    );
+
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.step.active {
+    background-color: rgb(255, 75, 75);
+    border-color: rgb(255, 75, 75);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.step-line {
+    height: 1px;
+    flex: 1;
+
+    background-color: color-mix(
+        in srgb,
+        currentColor 20%,
+        transparent
+    );
+}
+
+.st-key-question_card {
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.st-key-question_card h3 {
+    font-size: 1.5rem;
+    font-weight: 650;
+    line-height: 1.4;
+    letter-spacing: -0.3px;
+}
+
+.st-key-question_card div.stButton > button {
+    min-height: 56px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.st-key-question_card input {
+    border-radius: 12px;
+}
+
+.st-key-question_card div[role="radiogroup"] {
+    gap: 12px;
+}
+
+.st-key-result_card {
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.st-key-result_card [data-testid="stImage"] {
+    max-width: 320px;
+    margin: 16px auto;
+}
+
+.st-key-result_card h2 {
+    font-size: 2rem;
+    font-weight: 750;
+}
+
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.spec-card {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 12px;
+
+    background-color: color-mix(
+        in srgb,
+        currentColor 5%,
+        transparent
+    );
+
+    border: 1px solid color-mix(
+        in srgb,
+        currentColor 10%,
+        transparent
+    );
+}
+
+.spec-label {
+    font-size: 0.8rem;
+    opacity: 0.65;
+    margin-bottom: 5px;
+}
+
+.spec-value {
+    font-size: 1rem;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.st-key-restart_button button {
+    min-height: 54px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+
+    .block-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .app-header {
+        margin: 8px 0 28px;
+    }
+
+    .app-eyebrow {
+        font-size: 0.65rem;
+        margin-bottom: 12px;
+    }
+
+    .app-title {
+        font-size: 2rem;
+        letter-spacing: -0.8px;
+    }
+
+    .app-description {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+
+    .st-key-question_card {
+        padding: 14px;
+    }
+
+    .st-key-question_card h3 {
+        font-size: 1.3rem;
+    }
+
+    .steps {
+        gap: 7px;
+    }
+
+    .step {
+        width: 34px;
+        height: 34px;
+        font-size: 12px;
+    }
+
+    .st-key-result_card {
+        padding: 16px;
+    }
+
+    .st-key-result_card h2 {
+        font-size: 1.7rem;
+    }
+
+    .spec-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .spec-card {
+        padding: 10px;
+    }
+
+    .spec-label {
+        font-size: 0.75rem;
+    }
+
+    .spec-value {
+        font-size: 0.95rem;
+    }
+}
