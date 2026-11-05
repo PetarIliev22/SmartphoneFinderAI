@@ -48,10 +48,10 @@ def get_purpose(answers):
             return "work"
         case {"gaming": True}:
             return "gaming"
+        case {"photos": True, "videos": True}:
+            return "video"
         case {"photos": True}:
             return "photos"
-        case {"videos": True}:
-            return "video"
         case _:
             return "daily"
 
