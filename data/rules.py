@@ -2,12 +2,14 @@ rules = {
     "work": {
         True: ("purpose", "contains", "work")
     },
+    "documents": {
+        True: ("storage", ">=", 256)
+    },
     "gaming": {
         True: ("purpose", "contains", "gaming")
     },
     "photos": {
-        True: ("purpose", "contains", "photos"),
-        False: ("purpose", "contains", "daily")
+        True: ("purpose", "contains", "photos")
     },
     "many_apps": {
         True: ("ram", ">=", 12)

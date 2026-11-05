@@ -9,7 +9,6 @@ def show_question():
     question = questions[st.session_state.question_id]
     step = len(st.session_state.answers) + 1
 
-
     with st.container(border=True, key="question_card"):
         show_steps(step)
         st.markdown(f"### {question['text']}")
@@ -20,66 +19,43 @@ def show_question():
             yes, no = st.columns(2, gap="small")
 
             with yes:
-                if st.button(
-                    "Да",
-                    type="primary",
-                    use_container_width=True,
-                    key="yes"
-                ):
-                    save_answer(True)
-                    st.rerun()
+                if st.button("Да", type="primary", use_container_width=True):
+                    submit_answer(True)
 
             with no:
-                if st.button(
-                    "Не",
-                    use_container_width=True,
-                    key="no"
-                ):
-                    save_answer(False)
-                    st.rerun()
+                if st.button("Не", use_container_width=True):
+                    submit_answer(False)
 
         elif question["type"] == "number":
-            budget = st.number_input(
-                "Максимален бюджет (€)",
+            budget = st.slider(
+                "Изберете ценови диапазон (€)",
                 min_value=0,
-                value=500,
+                max_value=2000,
+                value=(350, 750),
                 step=50
             )
 
-            if st.button(
-                "Продължи",
-                type="primary",
-                use_container_width=True
-            ):
-                save_answer(budget)
-                st.rerun()
+            if st.button("Продължи", type="primary", use_container_width=True):
+                submit_answer(budget)
 
         elif question["type"] == "choice":
-            choice = st.radio(
-                "Операционна система",
-                question["options"]
-            )
+            choice = st.radio("Операционна система", question["options"])
 
-            if st.button(
-                "Продължи",
-                type="primary",
-                use_container_width=True
-            ):
-                save_answer(choice)
-                st.rerun()
+            if st.button("Продължи", type="primary", use_container_width=True):
+                submit_answer(choice)
 
+def submit_answer(answer):
+    save_answer(answer)
+    st.rerun()
 
 def show_steps(current, total=8):
-    steps = '<div class="steps">'
+    elements = []
 
     for i in range(1, total + 1):
         active = "active" if i == current else ""
-
-        steps += f'<div class="step {active}">{i}</div>'
+        elements.append(f'<div class="step {active}">{i}</div>')
 
         if i < total:
-            steps += '<div class="step-line"></div>'
+            elements.append('<div class="step-line"></div>')
 
-    steps += '</div>'
-
-    st.html(steps)
+    st.html(f'<div class="steps">{"".join(elements)}</div>')

@@ -839,7 +839,7 @@ smartphones = [
         'camera': 50,
         'price': 680,
         'purpose': ['gaming', 'work', 'daily'],
-        'image_url': 'assets/images/oneplus_13.png',
+        'image_url': 'assets/images/oneplus_13r.png',
         'refresh_rate': 120,
         'charging_w': 80,
         'wireless_charging': False,

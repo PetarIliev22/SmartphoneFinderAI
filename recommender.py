@@ -5,7 +5,6 @@ from data.dataset import smartphones
 from data.questions import questions
 from data.rules import rules
 
-
 OPERATORS = {
     ">=": operator.ge,
     "<=": operator.le,
@@ -23,7 +22,6 @@ PRIORITIES = {
     "daily": ["battery", "charging_w", "storage", "refresh_rate"]
 }
 
-
 def get_next_question(question_id, answer):
     next_question = questions[question_id]["next"]
 
@@ -31,7 +29,6 @@ def get_next_question(question_id, answer):
         return next_question.get(answer)
 
     return next_question
-
 
 def check_rule(phone, rule):
     field, operation, expected = rule
@@ -45,21 +42,18 @@ def check_rule(phone, rule):
     except (TypeError, ValueError):
         return False
 
-
 def get_purpose(answers):
-    if answers.get("work") is True:
-        return "work"
-
-    if answers.get("gaming") is True:
-        return "gaming"
-
-    if answers.get("photos") is True:
-        if answers.get("videos") is True:
+    match answers:
+        case {"work": True}:
+            return "work"
+        case {"gaming": True}:
+            return "gaming"
+        case {"photos": True}:
+            return "photos"
+        case {"videos": True}:
             return "video"
-        return "photos"
-
-    return "daily"
-
+        case _:
+            return "daily"
 
 def calculate_score(phone, answers):
     score = 0
@@ -73,11 +67,10 @@ def calculate_score(phone, answers):
         conditions = [rule] if isinstance(rule, tuple) else rule
 
         for condition in conditions:
-            if check_rule(phone, condition):
-                score += 3 if condition[0] == "purpose" else 2
+            points = 3 if condition[0] == "purpose" else 2
+            score += points if check_rule(phone, condition) else -points
 
     return score
-
 
 def compare_features(phone, candidates, purpose):
     score = 0
@@ -85,39 +78,38 @@ def compare_features(phone, candidates, purpose):
     for field in PRIORITIES[purpose]:
         value = phone.get(field)
 
-        if value is None:
+        if not isinstance(value, (int, float, bool)):
             continue
 
         values = [
-            other[field]
-            for other in candidates
-            if isinstance(other.get(field), (int, float, bool))
+            candidate[field]
+            for candidate in candidates
+            if isinstance(candidate.get(field), (int, float, bool))
         ]
 
-        if not values or max(values) == min(values):
+        if not values:
             continue
+        
+        min_value = min(values)
+        max_value = max(values)
 
-        score += (value - min(values)) / (max(values) - min(values))
+        if max_value > min_value:
+            score += (value - min_value) / (max_value - min_value)
 
     return score
 
-
-def recommend_phone(answers):
-    budget = answers.get("budget")
+def filter_phones(answers):
+    min_budget, max_budget = answers.get("budget", (0, 2000))
     preferred_os = answers.get("os", "Без предпочитание")
-    purpose = get_purpose(answers)
 
-    candidates = [
+    return [
         phone for phone in smartphones
-        if (budget is None or phone["price"] <= budget)
-        and (
-            preferred_os in (None, "Без предпочитание")
-            or phone["os"] == preferred_os
-        )
+        if min_budget <= phone["price"] <= max_budget
+        and preferred_os in (None, "Без предпочитание", phone["os"])
     ]
 
-    if not candidates:
-        return None
+def filter_requirements(candidates, answers):
+    purpose = get_purpose(answers)
 
     suitable = [
         phone for phone in candidates
@@ -127,14 +119,36 @@ def recommend_phone(answers):
     if suitable:
         candidates = suitable
 
-    if budget is not None and budget >= 700:
-        premium_candidates = [
-            phone for phone in candidates
-            if phone["price"] >= budget * 0.55
-        ]
+    requirements = []
 
-        if premium_candidates:
-            candidates = premium_candidates
+    for key, answer in answers.items():
+        rule = rules.get(key, {}).get(answer)
+
+        if rule is None:
+            continue
+
+        conditions = [rule] if isinstance(rule, tuple) else rule
+
+        requirements.extend(
+            condition for condition in conditions
+            if condition[0] != "purpose"
+        )
+
+    matching = [
+        phone for phone in candidates
+        if all(check_rule(phone, req) for req in requirements)
+    ]
+
+    return matching if matching else candidates
+
+def recommend_phone(answers):
+    candidates = filter_phones(answers)
+
+    if not candidates:
+        return None
+
+    candidates = filter_requirements(candidates, answers)
+    purpose = get_purpose(answers)
 
     return max(
         candidates,

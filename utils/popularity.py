@@ -5,7 +5,6 @@ import pandas as pd
 import requests
 import streamlit as st
 
-
 @st.cache_data(ttl=86400, show_spinner=False)
 def get_phone_popularity(phone_name, region):
     params = {
