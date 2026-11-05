@@ -132,10 +132,9 @@ def show_reviews(phone):
                 key="specs_button"
             )
 
+
 def show_result():
     phone = recommend_phone(st.session_state.answers)
-
-    st.subheader("Резултат")
 
     if phone is None:
         st.warning(
@@ -143,7 +142,7 @@ def show_result():
             "и с избраната операционна система."
         )
     else:
-        with st.container(border=True, key="result_card"):
+        with st.container(key="result_card"):
             st.success(
                 f"Препоръчваме: {phone['brand']} {phone['model']}"
             )
@@ -156,22 +155,25 @@ def show_result():
                         st.image(image, width="stretch")
 
             st.markdown(f"## Цена: {phone['price']} €")
+
             st.warning(
                 f"**Защо избрахме този смартфон?**\n\n"
-                f"{explain_recommendation(phone, st.session_state.answers)}",
+                f"{explain_recommendation(phone, st.session_state.answers)}"
             )
-            
+
             show_phone_specs(phone)
             show_reviews(phone)
 
             st.divider()
             show_popularity(phone)
 
-    if st.button(
-        "Започни отначало",
-        type="primary",
-        use_container_width=True,
-        key="restart_button"
-    ):
-        restart()
-        st.rerun()
+            st.divider()
+
+            if st.button(
+                "Започни отначало",
+                type="primary",
+                use_container_width=True,
+                key="restart_button"
+            ):
+                restart()
+                st.rerun()
