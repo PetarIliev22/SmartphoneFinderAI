@@ -167,7 +167,7 @@ def explain_recommendation(phone, answers):
     for key, answer in answers.items():
         rule = rules.get(key, {}).get(answer)
 
-        if rule is None:
+        if not rule:
             continue
 
         conditions = [rule] if isinstance(rule, tuple) else rule
@@ -182,12 +182,11 @@ def explain_recommendation(phone, answers):
                     matched.append(label)
 
     if purpose in phone.get("purpose", []):
-        explanation = f"Този модел е подходящ за {PURPOSE_LABELS[purpose]}"
+        text = f"Този модел е подходящ за {PURPOSE_LABELS[purpose]}."
     else:
-        explanation = "Този модел е най-близкото съответствие на вашите изисквания"
+        text = "Този модел е най-близкото съответствие на вашите изисквания."
 
     if matched:
-        explanation += " и отговаря на изискванията ви за "
-        explanation += " и ".join(matched[:2])
+        text += " Основните му предимства са " + " , ".join(matched) + "."
 
-    return explanation + "."
+    return text
