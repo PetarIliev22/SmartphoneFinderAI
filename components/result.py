@@ -6,7 +6,7 @@ from pathlib import Path
 from utils.popularity import show_popularity
 from recommender import recommend_phone
 from utils.session import restart
-
+from recommender import recommend_phone, explain_recommendation
 
 def render_specs(specifications):
     cards = "".join(
@@ -78,6 +78,7 @@ def show_phone_specs(phone):
         render_specs(camera_specs)
 
 
+
 def show_reviews(phone):
     review_url = phone.get("review_url")
     youtube_url = phone.get("youtube_url")
@@ -87,11 +88,11 @@ def show_reviews(phone):
         return
 
     st.divider()
-    st.markdown("### Ревю и видео")
+    st.markdown("### Ревю и допълнителна информация")
 
-    with st.container(border=True, key="review_section"):
+    with st.container(key="review_section"):
         if review_url:
-            st.markdown("**Текстово ревю**")
+            st.markdown("#### Ревю на смартфона")
             st.caption(
                 "Подробен преглед на дизайна, камерата, "
                 "производителността и батерията."
@@ -106,18 +107,30 @@ def show_reviews(phone):
             )
 
         if youtube_url:
+            if review_url:
+                st.divider()
+
             st.markdown("#### Видео ревю")
+            st.caption("Видео представяне и тест на смартфона.")
             st.video(youtube_url)
 
         if spec_source:
+            if review_url or youtube_url:
+                st.divider()
+
+            st.markdown("#### Пълни спецификации")
+            st.caption(
+                "Подробна информация за всички технически "
+                "характеристики на модела."
+            )
+
             st.link_button(
-                "Виж пълните спецификации",
+                "Виж спецификациите",
                 spec_source,
                 icon=":material/description:",
                 use_container_width=True,
                 key="specs_button"
             )
-
 
 def show_result():
     phone = recommend_phone(st.session_state.answers)
@@ -143,7 +156,11 @@ def show_result():
                         st.image(image, width="stretch")
 
             st.markdown(f"## Цена: {phone['price']} €")
-
+            st.warning(
+                f"**Защо избрахме този смартфон?**\n\n"
+                f"{explain_recommendation(phone, st.session_state.answers)}",
+            )
+            
             show_phone_specs(phone)
             show_reviews(phone)
 

@@ -4,7 +4,7 @@ import operator
 from data.dataset import smartphones
 from data.questions import questions
 from data.rules import rules
-
+from data.explanations import PURPOSE_LABELS, FEATURE_LABELS
 OPERATORS = {
     ">=": operator.ge,
     "<=": operator.le,
@@ -159,3 +159,35 @@ def recommend_phone(answers):
             -phone["model_id"]
         )
     )
+
+def explain_recommendation(phone, answers):
+    purpose = get_purpose(answers)
+    matched = []
+
+    for key, answer in answers.items():
+        rule = rules.get(key, {}).get(answer)
+
+        if rule is None:
+            continue
+
+        conditions = [rule] if isinstance(rule, tuple) else rule
+
+        for condition in conditions:
+            field = condition[0]
+
+            if field in FEATURE_LABELS and check_rule(phone, condition):
+                label = FEATURE_LABELS[field]
+
+                if label not in matched:
+                    matched.append(label)
+
+    if purpose in phone.get("purpose", []):
+        explanation = f"Този модел е подходящ за {PURPOSE_LABELS[purpose]}"
+    else:
+        explanation = "Този модел е най-близкото съответствие на вашите изисквания"
+
+    if matched:
+        explanation += " и отговаря на изискванията ви за "
+        explanation += " и ".join(matched[:2])
+
+    return explanation + "."

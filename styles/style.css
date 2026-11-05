@@ -173,13 +173,37 @@
 }
 
 .st-key-review_section {
-    border-radius: 16px;
-    padding: 18px;
+    padding: 8px 0 16px;
+}
+
+.st-key-review_section h4 {
+    font-size: 1.05rem;
+    font-weight: 650;
+    line-height: 1.4;
+    margin: 0 0 6px;
+}
+
+.st-key-review_section [data-testid="stCaptionContainer"] {
+    line-height: 1.6;
 }
 
 .st-key-review_section [data-testid="stVideo"] {
+    width: 100%;
     border-radius: 12px;
     overflow: hidden;
+}
+
+.st-key-review_button a,
+.st-key-specs_button a {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.st-key-review_section [data-testid="stDivider"] {
+    margin: 12px 0;
 }
 
 .st-key-review_button a,
@@ -309,7 +333,16 @@
     }
 
     .st-key-review_section {
-        padding: 12px;
+        padding: 4px 0 12px;
+    }
+
+    .st-key-review_section h4 {
+        font-size: 1rem;
+    }
+
+    .st-key-review_button a,
+    .st-key-specs_button a {
+        min-height: 50px;
     }
 }
 
