@@ -69,7 +69,7 @@ def show_question():
                 st.rerun()
 
 
-def show_steps(current, total=6):
+def show_steps(current, total=8):
     steps = '<div class="steps">'
 
     for i in range(1, total + 1):
