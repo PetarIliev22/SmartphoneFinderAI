@@ -150,6 +150,32 @@
     font-weight: 600;
 }
 
+.st-key-review_button a,
+.st-key-specs_button a {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 20px;
+    border: 1px solid #ff4b4b;
+    border-radius: 12px;
+    background-color: rgb(255, 75, 75);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.st-key-review_button a p,
+.st-key-specs_button a p {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.st-key-review_button a svg,
+.st-key-specs_button a svg {
+    color: #ff4b4b;
+}
+
 @media (max-width: 600px) {
     .block-container {
         padding: 1.5rem 1rem;

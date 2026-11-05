@@ -59,7 +59,7 @@ def show_result():
                 if image.startswith(("https://", "http://")):
                     st.image(image, width=250)
                 elif Path(image).is_file():
-                    st.image(image, width=250)
+                    st.image(image, width=500)
 
 
             st.markdown(f"## Цена: {phone['price']} €")
@@ -144,19 +144,22 @@ def show_result():
                         "Прочети ревюто",
                         review_url,
                         icon=":material/open_in_new:",
-                        use_container_width=True
+                        use_container_width=True,
+                        key="review_button"
                     )
-                
-                if youtube_url:
-                    st.markdown("#### Видео ревю")
-                    st.video(youtube_url)
 
-            if spec_source:
-                st.link_button(
-                    "Виж пълните спецификации",
-                    spec_source,
-                    use_container_width=True
-                )
+                    if youtube_url:
+                        st.markdown("#### Видео ревю")
+                        st.video(youtube_url)
+
+                    if spec_source:
+                        st.link_button(
+                            "Виж пълните спецификации",
+                            spec_source,
+                            icon=":material/description:",
+                            use_container_width=True,
+                            key="specs_button"
+                        )
                 
             st.divider()
             show_popularity(phone)
