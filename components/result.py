@@ -132,17 +132,16 @@ def show_reviews(phone):
                 key="specs_button"
             )
 
-
 def show_result():
     phone = recommend_phone(st.session_state.answers)
 
-    if phone is None:
-        st.warning(
-            "Няма смартфон в зададения бюджет "
-            "и с избраната операционна система."
-        )
-    else:
-        with st.container(key="result_card"):
+    with st.container(key="result_card"):
+        if phone is None:
+            st.warning(
+                "Няма смартфон в зададения бюджет "
+                "и с избраната операционна система."
+            )
+        else:
             st.success(
                 f"Препоръчваме: {phone['brand']} {phone['model']}"
             )
@@ -167,13 +166,13 @@ def show_result():
             st.divider()
             show_popularity(phone)
 
-            st.divider()
+        st.divider()
 
-            if st.button(
-                "Започни отначало",
-                type="primary",
-                use_container_width=True,
-                key="restart_button"
-            ):
-                restart()
-                st.rerun()
+        if st.button(
+            "Започни отначало",
+            type="primary",
+            use_container_width=True,
+            key="restart_button"
+        ):
+            restart()
+            st.rerun()
