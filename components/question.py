@@ -32,7 +32,8 @@ def show_question():
                 min_value=0,
                 max_value=2000,
                 value=(350, 750),
-                step=50
+                step=50,
+                on_change="ignore"
             )
 
             if st.button("Продължи", type="primary", use_container_width=True):
