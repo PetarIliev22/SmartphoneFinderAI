@@ -15,13 +15,5 @@ def show_header():
                 смартфона, който най-добре отговаря
                 на бюджета и нуждите ти.
             </p>
-
-            <div class="header-process">
-                <span>8 въпроса</span>
-                <span class="process-arrow">→</span>
-                <span>Анализ</span>
-                <span class="process-arrow">→</span>
-                <span>1 препоръка</span>
-            </div>
         </div>
     """)

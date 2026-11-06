@@ -5,6 +5,7 @@ from data.dataset import smartphones
 from data.questions import questions
 from data.rules import rules
 from data.explanations import PURPOSE_LABELS, FEATURE_LABELS
+
 OPERATORS = {
     ">=": operator.ge,
     "<=": operator.le,
