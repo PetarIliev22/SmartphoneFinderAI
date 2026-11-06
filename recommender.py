@@ -1,10 +1,9 @@
-
 import operator
 
+from data.rules import rules
 from data.loader import smartphones
 from data.questions import questions
-from data.rules import rules
-from data.explanations import PURPOSE_LABELS, FEATURE_LABELS
+from data.loader import PURPOSE_LABELS, FEATURE_LABELS
 
 OPERATORS = {
     ">=": operator.ge,

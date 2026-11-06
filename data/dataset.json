@@ -256,7 +256,7 @@
             "work",
             "daily"
         ],
-        "image_url": "assets/images/oneplus_12r.png",
+        "image_url": "assets/phones/oneplus_12r.png",
         "refresh_rate": 120,
         "charging_w": 100,
         "wireless_charging": false,
@@ -454,7 +454,7 @@
             "work",
             "daily"
         ],
-        "image_url": "assets/images/google_pixel_9.png",
+        "image_url": "assets/phones/google_pixel_9.png",
         "refresh_rate": 120,
         "charging_w": 27,
         "wireless_charging": true,
@@ -564,7 +564,7 @@
             "work",
             "daily"
         ],
-        "image_url": "assets/images/google_pixel_10.png",
+        "image_url": "assets/phones/google_pixel_10.png",
         "refresh_rate": 120,
         "charging_w": 30,
         "wireless_charging": true,
@@ -706,7 +706,7 @@
             "work",
             "daily"
         ],
-        "image_url": "assets/images/apple_iphone_16e.png",
+        "image_url": "assets/phones/apple_iphone_16e.png",
         "refresh_rate": 60,
         "wireless_charging": true,
         "video_4k_fps": 60,
@@ -733,7 +733,7 @@
             "gaming",
             "daily"
         ],
-        "image_url": "assets/images/xiaomi_14t.png",
+        "image_url": "assets/phones/xiaomi_14t.png",
         "refresh_rate": 144,
         "charging_w": 67,
         "wireless_charging": false,
@@ -793,7 +793,7 @@
             "work",
             "daily"
         ],
-        "image_url": "assets/images/xiaomi_15.png",
+        "image_url": "assets/phones/xiaomi_15.png",
         "refresh_rate": 120,
         "charging_w": 90,
         "wireless_charging": true,
@@ -821,7 +821,7 @@
             "photos",
             "daily"
         ],
-        "image_url": "assets/images/xiaomi_redmi_note_14_pro_5g.png",
+        "image_url": "assets/phones/xiaomi_redmi_note_14_pro_5g.png",
         "refresh_rate": 120,
         "charging_w": 45,
         "wireless_charging": false,
@@ -847,7 +847,7 @@
             "photos",
             "daily"
         ],
-        "image_url": "assets/images/xiaomi_redmi_note_14_5g.png",
+        "image_url": "assets/phones/xiaomi_redmi_note_14_5g.png",
         "refresh_rate": 120,
         "charging_w": 45,
         "wireless_charging": false,
@@ -872,7 +872,7 @@
             "gaming",
             "daily"
         ],
-        "image_url": "assets/images/poco_x7_pro.png",
+        "image_url": "assets/phones/poco_x7_pro.png",
         "refresh_rate": 120,
         "charging_w": 90,
         "wireless_charging": false,
@@ -898,7 +898,7 @@
             "gaming",
             "daily"
         ],
-        "image_url": "assets/images/poco_f6.png",
+        "image_url": "assets/phones/poco_f6.png",
         "refresh_rate": 120,
         "charging_w": 90,
         "wireless_charging": false,
@@ -925,7 +925,7 @@
             "video",
             "daily"
         ],
-        "image_url": "assets/images/poco_f7_pro.png",
+        "image_url": "assets/phones/poco_f7_pro.png",
         "refresh_rate": 120,
         "charging_w": 90,
         "wireless_charging": false,
@@ -983,7 +983,7 @@
             "work",
             "daily"
         ],
-        "image_url": "assets/images/oneplus_13.png",
+        "image_url": "assets/phones/oneplus_13.png",
         "refresh_rate": 120,
         "charging_w": 80,
         "wireless_charging": false,

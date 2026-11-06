@@ -8,3 +8,7 @@ def load_json(filename):
         return json.load(file)
 
 smartphones = load_json("dataset.json")
+explanations = load_json("explanations.json")
+
+PURPOSE_LABELS = explanations["PURPOSE_LABELS"]
+FEATURE_LABELS = explanations["FEATURE_LABELS"]
