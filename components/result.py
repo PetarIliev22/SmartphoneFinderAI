@@ -4,9 +4,9 @@ from html import escape
 from pathlib import Path
 
 from utils.popularity import show_popularity
-from recommender import recommend_phone
+from expert_system.recommender import recommend_phone
 from utils.session import restart
-from recommender import recommend_phone, explain_recommendation
+from expert_system.recommender import recommend_phone, explain_recommendation
 
 def render_specs(specifications):
     cards = "".join(

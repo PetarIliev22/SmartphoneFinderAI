@@ -2,7 +2,7 @@
 import streamlit as st
 
 from data.questions import questions
-from recommender import get_next_question
+from expert_system.recommender import get_next_question
 
 
 def init_session():
