@@ -1,7 +1,7 @@
 
 import operator
 
-from data.dataset import smartphones
+from data.loader import smartphones
 from data.questions import questions
 from data.rules import rules
 from data.explanations import PURPOSE_LABELS, FEATURE_LABELS
