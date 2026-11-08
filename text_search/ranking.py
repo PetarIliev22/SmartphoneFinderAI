@@ -3,7 +3,7 @@ import re
 from functools import lru_cache
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from data.loader import RULE_TERMS, RULE_GROUPS
+from data.loader import RULE_TERMS, RULE_GROUPS, PURPOSE_LABELS, FEATURE_LABELS
 from data.rules import rules
 from expert_system.recommender import check_rule
 from text_search.retrieval import retrieve_phones
@@ -121,7 +121,48 @@ def rank_phones(text):
 
     return [phone for phone, score in scored]
 
+def explain_phone(phone, text):
+    detected = detect_rules(text)
+
+    purposes = []
+    features = []
+
+    for name in detected:
+        rule = rules.get(name, {}).get(True)
+
+        if not rule or not check_rule(phone, rule):
+            continue
+
+        if name in PURPOSE_LABELS:
+            purposes.append(PURPOSE_LABELS[name])
+
+        field = rule[0]
+
+        if field in FEATURE_LABELS:
+            label = FEATURE_LABELS[field]
+
+            if label not in features:
+                features.append(label)
+
+    explanation = "Този смартфон е подходящ за твоите нужди."
+
+    if purposes:
+        explanation = (
+            "Този смартфон е подходящ за "
+            + ", ".join(purposes) + "."
+        )
+
+    if features:
+        explanation += (
+            "\n\nОсновните му предимства са: "
+            + ", ".join(features) + "."
+        )
+
+    return explanation
+
 def recommend_phone(text):
+    if len(text.strip()) < 5:
+        return None
     ranked = rank_phones(text)
     return ranked[0] if ranked else None
 

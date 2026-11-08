@@ -132,9 +132,10 @@ def show_reviews(phone):
                 key="specs_button"
             )
 
-def show_result():
-    phone = recommend_phone(st.session_state.answers)
-
+def show_result(phone=None, from_chat=False):
+    if phone is None:
+        phone = recommend_phone(st.session_state.answers)
+  
     with st.container(key="result_card"):
         if phone is None:
             st.warning(
@@ -175,4 +176,7 @@ def show_result():
             key="restart_button"
         ):
             restart()
+            st.session_state.page = "chat"
+            st.session_state.selected_chat_phone = None
             st.rerun()
+            
