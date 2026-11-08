@@ -9,6 +9,10 @@ def load_json(filename):
 
 smartphones = load_json("dataset.json")
 explanations = load_json("explanations.json")
+search_terms = load_json("search_terms.json")
+
+PURPOSE_TERMS = search_terms["PURPOSE_TERMS"]
+FEATURE_TERMS = search_terms["FEATURE_TERMS"]
 
 PURPOSE_LABELS = explanations["PURPOSE_LABELS"]
 FEATURE_LABELS = explanations["FEATURE_LABELS"]
