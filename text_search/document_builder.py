@@ -1,7 +1,8 @@
-from data.loader import smartphones, PURPOSE_TERMS, FEATURE_TERMS
+from data.loader import smartphones, PURPOSE_TERMS
 
 def build_document(phone):
     excluded = {"model_id", "image_url", "spec_source", "review_url", "youtube_url", "price"}
+
     document = []
 
     for key, value in phone.items():
@@ -9,10 +10,9 @@ def build_document(phone):
             continue
 
         if key == "purpose":
-            value = ", ".join(PURPOSE_TERMS.get(p, p) for p in value)
-
-        elif key in FEATURE_TERMS:
-            value = f"{value} {FEATURE_TERMS[key]}"
+            value = ", ".join(
+                PURPOSE_TERMS.get(p, p) for p in value
+            )
 
         document.append(f"{key} {value}")
 

@@ -8,4 +8,4 @@ def load_json(filename):
 smartphones = load_json("dataset.json")
 
 PURPOSE_LABELS, FEATURE_LABELS = load_json("explanations.json").values()
-PURPOSE_TERMS, FEATURE_TERMS = load_json("search_terms.json").values()
+PURPOSE_TERMS, FEATURE_TERMS, RULE_TERMS, RULE_GROUPS = load_json("search_terms.json").values()

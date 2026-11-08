@@ -2,14 +2,20 @@ rules = {
     "work": {
         True: ("purpose", "contains", "work")
     },
-    "documents": {
-        True: ("storage", ">=", 256)
-    },
     "gaming": {
         True: ("purpose", "contains", "gaming")
     },
     "photos": {
         True: ("purpose", "contains", "photos")
+    },
+    "videos": {
+        True: ("purpose", "contains", "video")
+    },
+    "daily": {
+        True: ("purpose", "contains", "daily")
+    },
+    "documents": {
+        True: ("storage", ">=", 256)
     },
     "many_apps": {
         True: ("ram", ">=", 12)
@@ -22,6 +28,18 @@ rules = {
     },
     "large_games": {
         True: ("storage", ">=", 512)
+    },
+    "low_ram": {
+        True: ("ram", "<=", 8)
+    },
+    "high_ram": {
+        True: ("ram", ">=", 12)
+    },
+    "low_storage": {
+        True: ("storage", "<=", 128)
+    },
+    "high_storage": {
+        True: ("storage", ">=", 256)
     },
     "large_screen": {
         True: ("screen", ">=", 6.7)
@@ -41,11 +59,18 @@ rules = {
     "long_gaming": {
         True: ("battery", ">=", 5500)
     },
-    "videos": {
-        True: ("purpose", "contains", "video")
+    "small_battery": {
+        True: ("battery", "<=", 4500)
     },
+    "large_battery": {
+        True: ("battery", ">=", 5500)
+    },
+
     "fast_charging": {
         True: ("charging_w", ">=", 45)
+    },
+    "slow_charging": {
+        True: ("charging_w", "<=", 25)
     },
     "wireless_charging": {
         True: ("wireless_charging", "==", True)
@@ -53,13 +78,33 @@ rules = {
     "high_refresh_rate": {
         True: ("refresh_rate", ">=", 120)
     },
-    "video_4k_60": {
-        True: ("video_4k_fps", ">=", 60)
+    "low_refresh_rate": {
+        True: ("refresh_rate", "<=", 60)
+    },
+
+    "high_camera_resolution": {
+        True: ("camera", ">=", 50)
+    },
+    "low_camera_resolution": {
+        True: ("camera", "<=", 48)
+    },
+    "ois": {
+        True: ("ois", "==", True)
     },
     "optical_zoom": {
         True: ("telephoto_optical_zoom", ">=", 3)
     },
-    "ois": {
-        True: ("ois", "==", True)
+    "ultrawide_camera": {
+        True: ("ultrawide_mp", ">=", 12)
+    },
+
+    "video_4k_60": {
+        True: ("video_4k_fps", ">=", 60)
+    },
+    "video_8k": {
+        True: ("video_8k_fps", ">=", 24)
+    },
+    "video_prores": {
+        True: ("video_prores", "==", True)
     }
 }

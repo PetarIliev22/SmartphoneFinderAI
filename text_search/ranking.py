@@ -1,36 +1,99 @@
+import re
+
+from functools import lru_cache
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from data.loader import smartphones, PURPOSE_TERMS, FEATURE_TERMS
-from text_search.indexer import build_index
+from data.loader import RULE_TERMS, RULE_GROUPS
+from data.rules import rules
+from expert_system.recommender import check_rule
 from text_search.retrieval import retrieve_phones
+from text_search.indexer import build_index
+from text_search.document_builder import build_document
 
-def detect_preferences(text, vectorizer):
-    terms = {**PURPOSE_TERMS, **FEATURE_TERMS}
+@lru_cache(maxsize=1)
+def build_rules_index():
+    names = []
+    phrases = []
 
-    query_vector = vectorizer.transform([text])
-    term_vectors = vectorizer.transform(list(terms.values()))
+    for name, terms in RULE_TERMS.items():
+        for phrase in terms if isinstance(terms, list) else [terms]:
+            names.append(name)
+            phrases.append(phrase)
 
-    scores = cosine_similarity(query_vector, term_vectors)[0]
+    vectorizer = TfidfVectorizer(ngram_range=(1, 2))
+    matrix = vectorizer.fit_transform(phrases)
 
-    return dict(zip(terms.keys(), scores))
+    return names, vectorizer, matrix
 
-def technical_score(phone, candidates, preferences):
-    scores = []
+def detect_rules(text):
+    names, vectorizer, matrix = build_rules_index()
+    words = re.findall(r"\w+", text.lower())
 
-    for feature, weight in preferences.items():
-        value = phone.get(feature)
+    if not words:
+        return []
 
-        if not isinstance(value, (int, float)) or isinstance(value, bool):
-            continue
+    normalized_text = f" {' '.join(words)} "
 
-        maximum = max(
-            (p.get(feature) or 0)
-            for p in candidates
-        )
+    phrases = [
+        " ".join(words[i:i + size])
+        for size in (1, 2, 3)
+        for i in range(len(words) - size + 1)
+    ]
 
-        if maximum > 0:
-            scores.append(weight * value / maximum)
+    similarities = cosine_similarity(
+        vectorizer.transform(phrases), matrix
+    )
 
-    return sum(scores) / sum(preferences.values()) if scores and sum(preferences.values()) else 0
+    detected = []
+
+    for members in RULE_GROUPS.values():
+        best_name = None
+        best_score = 0.35
+
+        for name in members:
+            if name not in RULE_TERMS:
+                continue
+
+            terms = RULE_TERMS[name]
+
+            if isinstance(terms, list):
+                matches = [
+                    phrase for phrase in terms
+                    if f" {' '.join(re.findall(r'\w+', phrase.lower()))} "
+                    in normalized_text
+                ]
+
+                score = max(
+                    (1 + len(phrase.split()) / 100 for phrase in matches),
+                    default=0
+                )
+            else:
+                score = max(
+                    (similarities[:, i].max()
+                     for i, rule_name in enumerate(names)
+                     if rule_name == name),
+                    default=0
+                )
+
+            if score > best_score:
+                best_name = name
+                best_score = score
+
+        if best_name:
+            detected.append(best_name)
+
+    return detected
+
+def technical_score(phone, detected_rules):
+    if not detected_rules:
+        return 0
+
+    matched = sum(
+        check_rule(phone, rules[name][True])
+        for name in detected_rules
+    )
+
+    return matched / len(detected_rules)
 
 def rank_phones(text):
     candidates = retrieve_phones(text)
@@ -38,30 +101,27 @@ def rank_phones(text):
     if not candidates:
         return []
 
-    vectorizer, matrix = build_index()
-    query_vector = vectorizer.transform([text])
+    vectorizer, _ = build_index()
+    documents = [build_document(phone) for phone in candidates]
 
-    similarities = cosine_similarity(query_vector, matrix)[0]
-    preferences = detect_preferences(text, vectorizer)
+    similarities = cosine_similarity(
+        vectorizer.transform([text]),
+        vectorizer.transform(documents)
+    )[0]
 
-    def score(phone):
-        similarity = similarities[smartphones.index(phone)]
-        technical = technical_score(phone, candidates, preferences)
+    detected = detect_rules(text)
+    scored = []
 
-        return 0.6 * similarity + 0.4 * technical
+    for phone, similarity in zip(candidates, similarities):
+        technical = technical_score(phone, detected)
+        score = 0.7 * technical + 0.3 * similarity
+        scored.append((phone, score))
 
-    return sorted(candidates, key=score, reverse=True)
+    scored.sort(key=lambda item: item[1], reverse=True)
 
-if __name__ == "__main__":
-    phones = rank_phones(
-        "Искам телефон за игри с повече RAM и плавен дисплей"
-    )
+    return [phone for phone, score in scored]
 
-    for phone in phones[:5]:
-        print(
-            phone["brand"],
-            phone["model"],
-            "RAM:", phone["ram"],
-            "Hz:", phone["refresh_rate"]
-        )
+def recommend_phone(text):
+    ranked = rank_phones(text)
+    return ranked[0] if ranked else None
 

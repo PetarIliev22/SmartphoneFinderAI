@@ -17,4 +17,3 @@ def retrieve_phones(text):
             ]
 
     return candidates
-
