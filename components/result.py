@@ -1,12 +1,12 @@
-
-import streamlit as st
 from html import escape
 from pathlib import Path
 
-from utils.popularity import show_popularity
-from expert_system.recommender import recommend_phone
-from utils.session import restart
+import streamlit as st
+
+from text_search.ranking import explain_phone
 from expert_system.recommender import recommend_phone, explain_recommendation
+from utils.popularity import show_popularity
+from utils.session import restart
 
 def render_specs(specifications):
     cards = "".join(
@@ -23,7 +23,6 @@ def render_specs(specifications):
     if cards:
         st.html(f'<div class="spec-grid">{cards}</div>')
 
-
 def add_spec(specifications, phone, key, label, unit=""):
     value = phone.get(key)
 
@@ -36,7 +35,6 @@ def add_spec(specifications, phone, key, label, unit=""):
         value = f"{value} {unit}"
 
     specifications.append((label, value))
-
 
 def show_phone_specs(phone):
     specifications = [
@@ -51,40 +49,43 @@ def show_phone_specs(phone):
     st.markdown("### Основни характеристики")
     render_specs(specifications)
 
-    extra_specs = []
+    extra_specs = [
+        ("chipset", "Процесор", ""),
+        ("refresh_rate", "Честота на дисплея", "Hz"),
+        ("charging_w", "Бързо зареждане", "W"),
+        ("wireless_charging", "Безжично зареждане", ""),
+        ("foldable", "Сгъваем дисплей", "")
+    ]
 
-    add_spec(extra_specs, phone, "chipset", "Процесор")
-    add_spec(extra_specs, phone, "refresh_rate", "Честота на дисплея", "Hz")
-    add_spec(extra_specs, phone, "charging_w", "Бързо зареждане", "W")
-    add_spec(extra_specs, phone, "wireless_charging", "Безжично зареждане")
-    add_spec(extra_specs, phone, "foldable", "Сгъваем дисплей")
+    camera_specs = [
+        ("ois", "Оптична стабилизация", ""),
+        ("telephoto_optical_zoom", "Оптичен зуум", "x"),
+        ("ultrawide_mp", "Ултраширока камера", "MP"),
+        ("video_4k_fps", "4K видеозапис", "fps"),
+        ("video_8k_fps", "8K видеозапис", "fps"),
+        ("video_log", "Log видео", ""),
+        ("video_prores", "ProRes видео", "")
+    ]
 
-    if extra_specs:
-        st.markdown("### Допълнителни характеристики")
-        render_specs(extra_specs)
+    for title, fields in [
+        ("Допълнителни характеристики", extra_specs),
+        ("Камера и видео", camera_specs)
+    ]:
+        specs = []
 
-    camera_specs = []
+        for key, label, unit in fields:
+            add_spec(specs, phone, key, label, unit)
 
-    add_spec(camera_specs, phone, "ois", "Оптична стабилизация")
-    add_spec(camera_specs, phone, "telephoto_optical_zoom", "Оптичен зуум", "x")
-    add_spec(camera_specs, phone, "ultrawide_mp", "Ултраширока камера", "MP")
-    add_spec(camera_specs, phone, "video_4k_fps", "4K видеозапис", "fps")
-    add_spec(camera_specs, phone, "video_8k_fps", "8K видеозапис", "fps")
-    add_spec(camera_specs, phone, "video_log", "Log видео")
-    add_spec(camera_specs, phone, "video_prores", "ProRes видео")
-
-    if camera_specs:
-        st.markdown("### Камера и видео")
-        render_specs(camera_specs)
-
-
+        if specs:
+            st.markdown(f"### {title}")
+            render_specs(specs)
 
 def show_reviews(phone):
     review_url = phone.get("review_url")
     youtube_url = phone.get("youtube_url")
     spec_source = phone.get("spec_source")
 
-    if not (review_url or youtube_url or spec_source):
+    if not any((review_url, youtube_url, spec_source)):
         return
 
     st.divider()
@@ -97,7 +98,6 @@ def show_reviews(phone):
                 "Подробен преглед на дизайна, камерата, "
                 "производителността и батерията."
             )
-
             st.link_button(
                 "Прочети ревюто",
                 review_url,
@@ -123,7 +123,6 @@ def show_reviews(phone):
                 "Подробна информация за всички технически "
                 "характеристики на модела."
             )
-
             st.link_button(
                 "Виж спецификациите",
                 spec_source,
@@ -135,13 +134,10 @@ def show_reviews(phone):
 def show_result(phone=None, from_chat=False):
     if phone is None:
         phone = recommend_phone(st.session_state.answers)
-  
+
     with st.container(key="result_card"):
         if phone is None:
-            st.warning(
-                "Няма смартфон в зададения бюджет "
-                "и с избраната операционна система."
-            )
+            st.warning("Не открихме подходящ смартфон.")
         else:
             st.success(
                 f"Препоръчваме: {phone['brand']} {phone['model']}"
@@ -149,16 +145,28 @@ def show_result(phone=None, from_chat=False):
 
             image = phone.get("image_url")
 
-            if image:
-                if image.startswith(("https://", "http://")) or Path(image).is_file():
-                    with st.container(key="phone_image"):
-                        st.image(image, width="stretch")
+            if image and (
+                image.startswith(("http://", "https://"))
+                or Path(image).is_file()
+            ):
+                with st.container(key="phone_image"):
+                    st.image(image, width="stretch")
 
             st.markdown(f"## Цена: {phone['price']} €")
 
+            if from_chat:
+                explanation = explain_phone(
+                    phone,
+                    st.session_state.get("chat_recommendation_text", "")
+                )
+            else:
+                explanation = explain_recommendation(
+                    phone,
+                    st.session_state.answers
+                )
+
             st.warning(
-                f"**Защо избрахме този смартфон?**\n\n"
-                f"{explain_recommendation(phone, st.session_state.answers)}"
+                f"**Защо избрахме този смартфон?**\n\n{explanation}"
             )
 
             show_phone_specs(phone)
@@ -176,7 +184,7 @@ def show_result(phone=None, from_chat=False):
             key="restart_button"
         ):
             restart()
-            st.session_state.page = "chat"
+            st.session_state.page = "chat" if from_chat else "analysis"
+            st.session_state.mode = st.session_state.page
             st.session_state.selected_chat_phone = None
             st.rerun()
-            

@@ -1,19 +1,19 @@
-import re
-
 from functools import lru_cache
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from data.loader import RULE_TERMS, RULE_GROUPS, PURPOSE_LABELS, FEATURE_LABELS
+from data.loader import (
+    RULE_TERMS, RULE_GROUPS, PURPOSE_LABELS, FEATURE_LABELS
+)
 from data.rules import rules
 from expert_system.recommender import check_rule
 from text_search.retrieval import retrieve_phones
 from text_search.indexer import build_index
+from text_search.text_processing import normalize_text
 from text_search.document_builder import build_document
 
 @lru_cache(maxsize=1)
 def build_rules_index():
-    names = []
-    phrases = []
+    names, phrases = [], []
 
     for name, terms in RULE_TERMS.items():
         for phrase in terms if isinstance(terms, list) else [terms]:
@@ -27,7 +27,7 @@ def build_rules_index():
 
 def detect_rules(text):
     names, vectorizer, matrix = build_rules_index()
-    words = re.findall(r"\w+", text.lower())
+    words = normalize_text(text).split()
 
     if not words:
         return []
@@ -40,15 +40,11 @@ def detect_rules(text):
         for i in range(len(words) - size + 1)
     ]
 
-    similarities = cosine_similarity(
-        vectorizer.transform(phrases), matrix
-    )
-
+    similarities = cosine_similarity(vectorizer.transform(phrases), matrix)
     detected = []
 
     for members in RULE_GROUPS.values():
-        best_name = None
-        best_score = 0.35
+        best_name, best_score = None, 0.35
 
         for name in members:
             if name not in RULE_TERMS:
@@ -57,27 +53,26 @@ def detect_rules(text):
             terms = RULE_TERMS[name]
 
             if isinstance(terms, list):
-                matches = [
-                    phrase for phrase in terms
-                    if f" {' '.join(re.findall(r'\w+', phrase.lower()))} "
-                    in normalized_text
-                ]
-
                 score = max(
-                    (1 + len(phrase.split()) / 100 for phrase in matches),
+                    (
+                        1 + len(term.split()) / 100
+                        for term in terms
+                        if f" {normalize_text(term)} " in normalized_text
+                    ),
                     default=0
                 )
             else:
                 score = max(
-                    (similarities[:, i].max()
-                     for i, rule_name in enumerate(names)
-                     if rule_name == name),
+                    (
+                        similarities[:, i].max()
+                        for i, rule_name in enumerate(names)
+                        if rule_name == name
+                    ),
                     default=0
                 )
 
             if score > best_score:
-                best_name = name
-                best_score = score
+                best_name, best_score = name, score
 
         if best_name:
             detected.append(best_name)
@@ -102,32 +97,31 @@ def rank_phones(text):
         return []
 
     vectorizer, _ = build_index()
-    documents = [build_document(phone) for phone in candidates]
 
     similarities = cosine_similarity(
         vectorizer.transform([text]),
-        vectorizer.transform(documents)
+        vectorizer.transform(
+            [build_document(phone) for phone in candidates]
+        )
     )[0]
 
     detected = detect_rules(text)
     scored = []
 
     for phone, similarity in zip(candidates, similarities):
-        technical = technical_score(phone, detected)
-        score = 0.7 * technical + 0.3 * similarity
+        score = (
+            0.7 * technical_score(phone, detected)
+            + 0.3 * similarity
+        )
         scored.append((phone, score))
 
     scored.sort(key=lambda item: item[1], reverse=True)
-
-    return [phone for phone, score in scored]
+    return [phone for phone, _ in scored]
 
 def explain_phone(phone, text):
-    detected = detect_rules(text)
+    purposes, features = [], []
 
-    purposes = []
-    features = []
-
-    for name in detected:
+    for name in detect_rules(text):
         rule = rules.get(name, {}).get(True)
 
         if not rule or not check_rule(phone, rule):
@@ -163,6 +157,6 @@ def explain_phone(phone, text):
 def recommend_phone(text):
     if len(text.strip()) < 5:
         return None
+
     ranked = rank_phones(text)
     return ranked[0] if ranked else None
-

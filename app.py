@@ -1,6 +1,7 @@
-import streamlit as st
-from pathlib import Path
 import base64
+import streamlit as st
+
+from pathlib import Path
 from utils.session import init_session
 from components.header import show_header
 from components.question import show_question
@@ -8,25 +9,33 @@ from components.result import show_result
 from components.chat import show_chat
 
 def main():
-    bg_path = Path(__file__).parent / "assets/bg/background.png"
-    bg_base64 = base64.b64encode(bg_path.read_bytes()).decode()
-
-    st.markdown(
-        f"<style>.stApp {{ background-image: url('data:image/png;base64,{bg_base64}'); }}</style>",
-        unsafe_allow_html=True
-    )
-    
     st.set_page_config(
         page_title="Препоръчване на смартфони",
         layout="centered"
     )
 
-    css = Path(__file__).parent / "styles" / "style.css"
-    
+    root = Path(__file__).parent
+
+    bg = base64.b64encode(
+        (root / "assets/bg/background.png").read_bytes()
+    ).decode()
+
     st.markdown(
-        f"<style>{css.read_text(encoding='utf-8')}</style>",
+        f"""
+        <style>
+        @media (max-width: 600px) {{
+            .stApp {{
+                background-image: url("data:image/png;base64,{bg}") !important;
+            }}
+        }}
+        </style>
+        """,
         unsafe_allow_html=True
     )
+
+    css = (root / "styles/style.css").read_text(encoding="utf-8")
+
+    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
     init_session()
 
@@ -36,21 +45,16 @@ def main():
     if "mode" not in st.session_state:
         st.session_state.mode = "analysis"
 
-    if st.session_state.page != "result":
-        show_header()
-
-        st.segmented_control(
-            "Режим",
-            options=["analysis", "chat"],
-            format_func=lambda x: {
-                "analysis": "Подробен анализ",
-                "chat": "AI Чат"
-            }[x],
-            key="mode",
-            label_visibility="collapsed",
-            width="stretch"
+    is_result = (
+        st.session_state.page == "result"
+        or (
+            st.session_state.page == "analysis"
+            and st.session_state.question_id is None
         )
+    )
 
+    if not is_result:
+        show_header()
         st.session_state.page = st.session_state.mode
 
     match st.session_state.page:
@@ -58,16 +62,17 @@ def main():
             show_chat()
 
         case "analysis":
-            if st.session_state.question_id is not None:
-                show_question()
-            else:
+            if st.session_state.question_id is None:
                 show_result()
+            else:
+                show_question()
 
         case "result":
             show_result(
-                st.session_state.selected_chat_phone,
+                phone=st.session_state.selected_chat_phone,
                 from_chat=True
             )
+
 
 if __name__ == "__main__":
     main()

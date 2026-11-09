@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -23,8 +22,8 @@ def get_phone_popularity(phone_name, region):
         params=params,
         timeout=30
     )
-
     response.raise_for_status()
+
     result = response.json()
 
     if result.get("error"):
@@ -38,29 +37,25 @@ def get_phone_popularity(phone_name, region):
 
     for item in timeline:
         values = item.get("values", [])
+        timestamp = item.get("timestamp")
 
-        if not values:
+        if not values or timestamp is None:
             continue
 
         value = values[0].get("extracted_value")
-        timestamp = item.get("timestamp")
 
-        if value is None or timestamp is None:
-            continue
-
-        records.append({
-            "Дата": datetime.fromtimestamp(
-                int(timestamp), tz=timezone.utc
-            ),
-            "Популярност": int(value)
-        })
+        if value is not None:
+            records.append({
+                "Дата": datetime.fromtimestamp(
+                    int(timestamp), tz=timezone.utc
+                ),
+                "Популярност": int(value)
+            })
 
     return pd.DataFrame(records)
 
-
 def show_popularity(phone):
     name = f"{phone['brand']} {phone['model']}"
-
     st.markdown("### Популярност на смартфона")
 
     try:
@@ -73,15 +68,11 @@ def show_popularity(phone):
                 region = "Световна популярност"
 
         if data.empty or data["Популярност"].max() == 0:
-            st.info(
-                "Няма достатъчно данни за популярността "
-                "на този модел."
-            )
+            st.info("Няма достатъчно данни за популярността на този модел.")
             return
 
         st.caption(
-            f"Интерес от Google търсения · {region} · "
-            "Последните 12 месеца"
+            f"Интерес от Google търсения · {region} · Последните 12 месеца"
         )
 
         st.line_chart(

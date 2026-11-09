@@ -1,10 +1,7 @@
-
-from pathlib import Path
-
 import streamlit as st
 
+from pathlib import Path
 from text_search.ranking import recommend_phone, explain_phone
-
 
 def show_phone_card(phone, index):
     with st.container(border=True, key=f"phone_card_{index}"):
@@ -13,7 +10,9 @@ def show_phone_card(phone, index):
         if image and Path(image).is_file():
             st.image(image, width=300)
 
-        st.markdown(f"**{phone['brand']} {phone['model']} — {phone['price']} €**")
+        st.markdown(
+            f"**{phone['brand']} {phone['model']} — {phone['price']} €**"
+        )
 
         if st.button(
             "Виж подробности →",
@@ -29,17 +28,16 @@ def show_chat():
         st.markdown("### Твоят AI асистент")
         st.caption("Опиши какъв смартфон търсиш.")
 
-        if "chat_messages" not in st.session_state:
-            st.session_state.chat_messages = [
-                {
-                    "role": "assistant",
-                    "content": (
-                        "Здравей! 👋\n\n"
-                        "Опиши ми какъв телефон търсиш "
-                        "и за какво ще го използваш."
-                    )
-                }
-            ]
+        st.session_state.setdefault("chat_messages", [
+            {
+                "role": "assistant",
+                "content": (
+                    "Здравей! 👋\n\n"
+                    "Опиши ми какъв телефон търсиш "
+                    "и за какво ще го използваш."
+                )
+            }
+        ])
 
         with st.container(key="chat_messages"):
             for index, message in enumerate(st.session_state.chat_messages):
@@ -54,30 +52,30 @@ def show_chat():
             key="phone_chat_input"
         )
 
-        if prompt:
-            phone = recommend_phone(prompt)
+        if not prompt:
+            return
 
-            st.session_state.chat_messages.append({
-                "role": "user",
-                "content": prompt
-            })
+        phone = recommend_phone(prompt)
+        st.session_state.chat_recommendation_text = prompt
 
-            if phone:
-                response = (
-                    f"📱 Препоръчвам ти **{phone['brand']} {phone['model']}**.\n\n"
-                    f"{explain_phone(phone, prompt)}"
-                )
-            else:
-                response = (
-                    "Можеш ли да ми дадеш малко повече информация? 😊\n\n"
-                    "Например какъв е бюджетът ти и за какво "
-                    "ще използваш смартфона?"
-                )
+        st.session_state.chat_messages.append({
+            "role": "user",
+            "content": prompt
+        })
 
-            st.session_state.chat_messages.append({
-                "role": "assistant",
-                "content": response,
-                "phone": phone
-            })
+        response = (
+            f"📱 Препоръчвам ти **{phone['brand']} {phone['model']}**.\n\n"
+            f"{explain_phone(phone, prompt)}"
+            if phone else
+            "Можеш ли да ми дадеш малко повече информация?\n\n"
+            "Например какъв е бюджетът ти и за какво "
+            "ще използваш смартфона?"
+        )
 
-            st.rerun()
+        st.session_state.chat_messages.append({
+            "role": "assistant",
+            "content": response,
+            "phone": phone
+        })
+
+        st.rerun()

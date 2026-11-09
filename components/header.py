@@ -1,6 +1,4 @@
-
 import streamlit as st
-
 
 def show_header():
     st.html("""
@@ -17,3 +15,17 @@ def show_header():
             </p>
         </div>
     """)
+    
+    st.segmented_control(
+        "Режим",
+        options=["analysis", "chat"],
+        format_func=lambda x: {
+            "analysis": "Подробен анализ",
+            "chat": "AI Чат"
+        }[x],
+        default="analysis",
+        key="mode",
+        label_visibility="collapsed",
+        width="stretch",
+        required=True
+    )

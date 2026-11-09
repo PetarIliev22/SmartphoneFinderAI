@@ -1,9 +1,8 @@
 import operator
 
 from data.rules import rules
-from data.loader import smartphones
+from data.loader import smartphones, PURPOSE_LABELS, FEATURE_LABELS
 from data.questions import questions
-from data.loader import PURPOSE_LABELS, FEATURE_LABELS
 
 OPERATORS = {
     ">=": operator.ge,
@@ -24,11 +23,7 @@ PRIORITIES = {
 
 def get_next_question(question_id, answer):
     next_question = questions[question_id]["next"]
-
-    if isinstance(next_question, dict):
-        return next_question.get(answer)
-
-    return next_question
+    return next_question.get(answer) if isinstance(next_question, dict) else next_question
 
 def check_rule(phone, rule):
     field, operation, expected = rule
@@ -55,20 +50,19 @@ def get_purpose(answers):
         case _:
             return "daily"
 
-def calculate_score(phone, answers):
-    score = 0
-
+def get_conditions(answers):
     for key, answer in answers.items():
         rule = rules.get(key, {}).get(answer)
 
-        if rule is None:
-            continue
+        if rule is not None:
+            yield from [rule] if isinstance(rule, tuple) else rule
 
-        conditions = [rule] if isinstance(rule, tuple) else rule
+def calculate_score(phone, answers):
+    score = 0
 
-        for condition in conditions:
-            points = 3 if condition[0] == "purpose" else 2
-            score += points if check_rule(phone, condition) else -points
+    for condition in get_conditions(answers):
+        points = 3 if condition[0] == "purpose" else 2
+        score += points if check_rule(phone, condition) else -points
 
     return score
 
@@ -87,14 +81,11 @@ def compare_features(phone, candidates, purpose):
             if isinstance(candidate.get(field), (int, float, bool))
         ]
 
-        if not values:
-            continue
-        
-        min_value = min(values)
-        max_value = max(values)
+        if values:
+            minimum, maximum = min(values), max(values)
 
-        if max_value > min_value:
-            score += (value - min_value) / (max_value - min_value)
+            if maximum > minimum:
+                score += (value - minimum) / (maximum - minimum)
 
     return score
 
@@ -119,27 +110,17 @@ def filter_requirements(candidates, answers):
     if suitable:
         candidates = suitable
 
-    requirements = []
-
-    for key, answer in answers.items():
-        rule = rules.get(key, {}).get(answer)
-
-        if rule is None:
-            continue
-
-        conditions = [rule] if isinstance(rule, tuple) else rule
-
-        requirements.extend(
-            condition for condition in conditions
-            if condition[0] != "purpose"
-        )
+    requirements = [
+        condition for condition in get_conditions(answers)
+        if condition[0] != "purpose"
+    ]
 
     matching = [
         phone for phone in candidates
         if all(check_rule(phone, req) for req in requirements)
     ]
 
-    return matching if matching else candidates
+    return matching or candidates
 
 def recommend_phone(answers):
     candidates = filter_phones(answers)
@@ -164,22 +145,14 @@ def explain_recommendation(phone, answers):
     purpose = get_purpose(answers)
     matched = []
 
-    for key, answer in answers.items():
-        rule = rules.get(key, {}).get(answer)
+    for condition in get_conditions(answers):
+        field = condition[0]
 
-        if not rule:
-            continue
+        if field in FEATURE_LABELS and check_rule(phone, condition):
+            label = FEATURE_LABELS[field]
 
-        conditions = [rule] if isinstance(rule, tuple) else rule
-
-        for condition in conditions:
-            field = condition[0]
-
-            if field in FEATURE_LABELS and check_rule(phone, condition):
-                label = FEATURE_LABELS[field]
-
-                if label not in matched:
-                    matched.append(label)
+            if label not in matched:
+                matched.append(label)
 
     if purpose in phone.get("purpose", []):
         text = f"Този модел е подходящ за {PURPOSE_LABELS[purpose]}."
@@ -187,6 +160,6 @@ def explain_recommendation(phone, answers):
         text = "Този модел е най-близкото съответствие на вашите изисквания."
 
     if matched:
-        text += " Основните му предимства са " + " , ".join(matched) + "."
+        text += " Основните му предимства са " + ", ".join(matched) + "."
 
     return text

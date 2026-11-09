@@ -1,9 +1,7 @@
-
 import streamlit as st
 
 from data.questions import questions
 from utils.session import save_answer
-
 
 def show_question():
     question = questions[st.session_state.question_id]
@@ -13,37 +11,38 @@ def show_question():
         show_steps(step)
         st.markdown(f"### {question['text']}")
 
-        if question["type"] == "boolean":
-            st.caption("Изберете един от двата отговора.")
+        match question["type"]:
+            case "boolean":
+                st.caption("Изберете един от двата отговора.")
+                yes, no = st.columns(2, gap="small")
 
-            yes, no = st.columns(2, gap="small")
+                with yes:
+                    if st.button("Да", type="primary", use_container_width=True):
+                        submit_answer(True)
 
-            with yes:
-                if st.button("Да", type="primary", use_container_width=True):
-                    submit_answer(True)
+                with no:
+                    if st.button("Не", use_container_width=True):
+                        submit_answer(False)
 
-            with no:
-                if st.button("Не", use_container_width=True):
-                    submit_answer(False)
+            case "number":
+                answer = st.slider(
+                    "Изберете ценови диапазон (€)",
+                    min_value=0,
+                    max_value=2000,
+                    value=(350, 750),
+                    step=50,
+                    on_change="ignore"
+                )
 
-        elif question["type"] == "number":
-            budget = st.slider(
-                "Изберете ценови диапазон (€)",
-                min_value=0,
-                max_value=2000,
-                value=(350, 750),
-                step=50,
-                on_change="ignore"
-            )
+            case "choice":
+                answer = st.radio(
+                    "Операционна система",
+                    question["options"]
+                )
 
+        if question["type"] in ("number", "choice"):
             if st.button("Продължи", type="primary", use_container_width=True):
-                submit_answer(budget)
-
-        elif question["type"] == "choice":
-            choice = st.radio("Операционна система", question["options"])
-
-            if st.button("Продължи", type="primary", use_container_width=True):
-                submit_answer(choice)
+                submit_answer(answer)
 
 def submit_answer(answer):
     save_answer(answer)
